@@ -1,0 +1,27 @@
+# Redflag Website Scanner
+
+This is a simple website scanning tool built with Python that allows you to quickly check the security of your website. It scans for common vulnerabilities such as SQL injections, cross-site scripting (XSS), and file inclusion vulnerabilities.
+
+## Requirements
+
+To run this script, you'll need to have Python 3 installed on your computer. You can download it from the [official Python website](https://www.python.org/downloads/).
+
+You will also need to install the following Python libraries:
+
+pip install requests
+pip install bs4
+pip install lxml
+
+You can install them by running the following command:
+
+pip install -r requirements.txt
+
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+
+## Acknowledgments
+
+This project was inspired by the [OWASP Top Ten Project](https://owasp.org/www-project-top-ten/).
+
