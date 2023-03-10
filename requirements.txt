@@ -1,0 +1,11 @@
+requests
+bs4
+lxml
+sqlite3
+configparser
+termcolor
+colored
+ssl
+urllib3
+re
+socket
