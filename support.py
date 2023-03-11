@@ -1,18 +1,9 @@
+import os
 import sqlite3
-import configparser
 
-# Read the configuration file
-config = configparser.ConfigParser()
-try:
-    config.read('config.ini')
-    admin_username = config['ADMIN']['username']
-    admin_password = config['ADMIN']['password']
-except KeyError as e:
-    print(f'❌ Error reading configuration file: {e} not found')
-    exit()
-except configparser.Error as e:
-    print(f'❌ Error reading configuration file: {e}')
-    exit()
+# Read the admin credentials from environment variables
+admin_username = os.environ.get('ADMIN_USERNAME')
+admin_password = os.environ.get('ADMIN_PASSWORD')
 
 # Connect to the database and create tables
 conn = sqlite3.connect('insecure_websites.db')
@@ -72,6 +63,37 @@ def delete_user(username):
         conn.commit()
         print("👤 User account deleted successfully")
 
+def change_credentials(username):
+    print("\n1. Change username")
+    print("2. Change password")
+    print("3. Change both")
+    choice = input("Please enter your choice: ")
+    if choice == "1":
+        new_username = input("\n👤 Please enter your new username: ")
+        if check_username(new_username):
+            print("Username already exists. Please choose a different one.")
+            return
+        c.execute("UPDATE users SET username=? WHERE username=?", (new_username, username))
+        conn.commit()
+        print("👤 Username changed successfully")
+    elif choice == "2":
+        new_password = input("\n🔒 Please enter your new password: ")
+        c.execute("UPDATE users SET password=? WHERE username=?", (new_password, username))
+        conn.commit()
+        print("🔒 Password changed successfully")
+    elif choice == "3":
+        new_username = input("\n👤 Please enter your new username: ")
+        if check_username(new_username):
+            print("Username already exists. Please choose a different one.")
+            return
+        new_password = input("\n🔒 Please enter your new password: ")
+        c.execute("UPDATE users SET username=?, password=? WHERE username=?", (new_username, new_password, username))
+        conn.commit()
+        print("👤🔒 Username and password changed successfully")
+    else:
+        print("Invalid choice. Please try again.")
+
+
 while True:
     print("\nRedflag / reported websites 🌐\n")
     print("1. Log in 🔑")
@@ -92,7 +114,8 @@ while True:
                 print("4. Add website 🆕")
                 print("5. Clear list 🗑️")
                 print("6. Get all users 👥")
-                print("7. Log out 🚪")
+                print("7. Change username or password")
+                print("8. Log out 🚪")
                 user_choice = input("Please enter your choice: ")
                     
                 if user_choice == "1":
@@ -137,13 +160,17 @@ while True:
 
 
 
+                elif user_choice == "8":
+                    change_credentials(username)
+                    
+
                 elif user_choice == "7":
                     print("\n Logged out successfully! 👋")
                     break
 
                 else:
                     print("Invalid choice. Please try again. ❌")
-                
+            
         else:
             print("Invalid username or password. Please try again. ❌")
                 
@@ -178,14 +205,15 @@ while True:
                     print("4. Add website 🆕")
                     print("5. Clear list 🗑️")
                     print("6. Get all users 👥 (Does not currently work)")
-                    print("7. Log out 🚪")
+                    print("7. Change username or password")
+                    print("8. Log out 🚪")
                     user_choice = input("Please enter your choice: ")
-
+                    
                     if user_choice == "1":
                         websites = get_websites()
                         for website in websites:
                             print(website[0], website[1])
-
+                    
                     elif user_choice == "2":
                         if check_admin(username):
                             new_username = input("\n👤 Please enter the new user's username: ")
@@ -194,18 +222,17 @@ while True:
                             print("\n User account created successfully! 🎉")
                         else:
                             print("⛔ You don't have permission to add a user")
-
+                    
                     elif user_choice == "3":
                         if check_admin(username):
                             del_username = input("\n❌👤 Please enter the username of the account to delete: ")
                             delete_user(del_username)
                         else:
                             print("⛔ You don't have permission to delete a user")
-
+                    
                     elif user_choice == "4":
                         new_website = input("🏴󠁡󠁵󠁮󠁳󠁿 Please enter the URL of the new website: ")
                         add_website(new_website)
-
                     elif user_choice == "5":
                         if check_admin(username):
                             confirm = input("❓ Are you sure you want to clear the list? This cannot be undone. (y/n) ")
@@ -217,46 +244,22 @@ while True:
                                 print("List not cleared")
                         else:
                             print("⛔ You don't have permission to clear the list")
-
-                    
-
+                    elif user_choice == "6":
+                        print("This option does not currently work.")
                     elif user_choice == "7":
+                        change_credentials(username)
                         print("\n Logged out successfully! 👋")
                         break
-
+                    elif user_choice == "8":
+                        print("\n Logged out successfully! 👋")
+                        break
                     else:
                         print("Invalid choice. Please try again. ❌")
-
-            else:
-                print("Invalid username or password. Please try again. ❌")
-
-        elif choice == "2":
-            print("\n Goodbye! 👋")
-            break
-
-        else:
-            print("Invalid choice. Please try again. ❌")
-
-                    
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-                    # Check if the user is an admin
+                        if choice == "2":
+                            print("\n Goodbye! 👋")
+                            break
+                        else:
+                            print("Invalid choice. Please try again. ❌")
 
 
 
