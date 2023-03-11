@@ -64,10 +64,10 @@ def delete_user(username):
         print("👤 User account deleted successfully")
 
 def change_credentials(username):
-    print("\n1. Change username")
-    print("2. Change password")
-    print("3. Change both")
-    choice = input("Please enter your choice: ")
+    print("\n1.👤🆕 Change username")
+    print("2.🔒🆕 Change password")
+    print("3.👤🔒 Change both")
+    choice = input("Please enter your choice: \n")
     if choice == "1":
         new_username = input("\n👤 Please enter your new username: ")
         if check_username(new_username):
@@ -75,12 +75,12 @@ def change_credentials(username):
             return
         c.execute("UPDATE users SET username=? WHERE username=?", (new_username, username))
         conn.commit()
-        print("👤 Username changed successfully")
+        print("👤 Username changed successfully \n")
     elif choice == "2":
         new_password = input("\n🔒 Please enter your new password: ")
         c.execute("UPDATE users SET password=? WHERE username=?", (new_password, username))
         conn.commit()
-        print("🔒 Password changed successfully")
+        print("🔒 Password changed successfully \n")
     elif choice == "3":
         new_username = input("\n👤 Please enter your new username: ")
         if check_username(new_username):
@@ -89,7 +89,7 @@ def change_credentials(username):
         new_password = input("\n🔒 Please enter your new password: ")
         c.execute("UPDATE users SET username=?, password=? WHERE username=?", (new_username, new_password, username))
         conn.commit()
-        print("👤🔒 Username and password changed successfully")
+        print("👤🔒 Username and password changed successfully \n")
     else:
         print("Invalid choice. Please try again.")
 
