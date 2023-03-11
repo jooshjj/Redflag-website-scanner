@@ -1,5 +1,6 @@
 import os
 import sqlite3
+import getpass
 
 # Read the admin credentials from environment variables
 admin_username = os.environ.get('ADMIN_USERNAME')
@@ -8,18 +9,27 @@ admin_password = os.environ.get('ADMIN_PASSWORD')
 # Connect to the database and create tables
 conn = sqlite3.connect('insecure_websites.db')
 c = conn.cursor()
-c.execute('''CREATE TABLE IF NOT EXISTS websites (id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT UNIQUE)''')
+
+# Modify the websites table to add the added_by column if it doesn't exist
+c.execute('''PRAGMA table_info(websites)''')
+columns = [column[1] for column in c.fetchall()]
+if 'added_by' not in columns:
+    c.execute('''ALTER TABLE websites ADD COLUMN added_by TEXT''')
+
+c.execute('''CREATE TABLE IF NOT EXISTS websites (id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT UNIQUE, added_by TEXT)''')
 c.execute('''CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT, is_admin INTEGER DEFAULT 0)''')
+
+
 
 # Create admin account if it doesn't exist
 c.execute("INSERT INTO users (username, password, is_admin) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = ?)", (admin_username, admin_password, 1, admin_username))
 conn.commit()
 
 # Function to add a website to the database
-def add_website(url):
-    c.execute("INSERT INTO websites (url) VALUES (?)", (url,))
+def add_website(website_url, username):
+    c.execute("INSERT INTO websites (url, added_by) VALUES (?, ?)", (website_url, username))
     conn.commit()
-    print("👍 Website added successfully")
+    print(f"{website_url} added to the database by {username}")
 
 # Function to retrieve all websites from the database
 def get_websites():
@@ -63,6 +73,10 @@ def delete_user(username):
         conn.commit()
         print("👤 User account deleted successfully")
 
+def get_current_username():
+    return getpass.getuser()
+
+
 def change_credentials(username):
     print("\n1.👤🆕 Change username")
     print("2.🔒🆕 Change password")
@@ -93,9 +107,17 @@ def change_credentials(username):
     else:
         print("Invalid choice. Please try again.")
 
+def get_user_list():
+    c.execute("SELECT username FROM users")
+    user_list = c.fetchall()
+    print("👥 User list:")
+    for user in user_list:
+        if user[0] is not None:
+            print(user[0])
+
 
 while True:
-    print("\nRedflag / reported websites 🌐\n")
+    print("\nRedflag / Social Network 🌐\n")
     print("1. Log in 🔑")
     print("2. Create new account 🆕")
     choice = input("Please enter your choice: ")
@@ -111,12 +133,12 @@ while True:
                 print("\n1. View websites 🌐")
                 print("2. Add user 👤")
                 print("3. Delete user ❌👤")
-                print("4. Add website 🆕")
+                print("4. Add dangerous website 🆕")
                 print("5. Clear list 🗑️")
                 print("6. Get all users 👥")
-                print("7. Change username or password")
+                print("7. Change username or password ✨")
                 print("8. Log out 🚪")
-                user_choice = input("Please enter your choice: ")
+                user_choice = input("\n🔢 Please enter your choice: ")
                     
                 if user_choice == "1":
                     websites = get_websites()
@@ -138,11 +160,12 @@ while True:
                         delete_user(del_username)
                     else:
                         print("⛔ You don't have permission to delete a user")
-                
+                        
                 elif user_choice == "4":
                     new_website = input("🏴󠁡󠁵󠁮󠁳󠁿 Please enter the URL of the new website: ")
-                    add_website(new_website)
-                            
+                    username = get_current_username() # replace this with your function to get the current usernam
+                    add_website(new_website, username)
+
                 elif user_choice == "5":
                     if check_admin(username):
                         confirm = input("❓ Are you sure you want to clear the list? This cannot be undone. (y/n) ")
@@ -155,11 +178,10 @@ while True:
                     else:
                         print("⛔ You don't have permission to clear the list")
 
+                elif user_choice == "6":
+                    get_user_list()
+
                 
-
-
-
-
                 elif user_choice == "8":
                     change_credentials(username)
                     
@@ -202,12 +224,12 @@ while True:
                     print("\n1. View websites 🌐")
                     print("2. Add user 👤")
                     print("3. Delete user ❌👤")
-                    print("4. Add website 🆕")
+                    print("4. Add website dangerous website🆕")
                     print("5. Clear list 🗑️")
                     print("6. Get all users 👥 (Does not currently work)")
-                    print("7. Change username or password")
+                    print("7. Change username or password ✨")
                     print("8. Log out 🚪")
-                    user_choice = input("Please enter your choice: ")
+                    user_choice = input("\n🔢 Please enter your choice: ")
                     
                     if user_choice == "1":
                         websites = get_websites()
@@ -232,7 +254,9 @@ while True:
                     
                     elif user_choice == "4":
                         new_website = input("🏴󠁡󠁵󠁮󠁳󠁿 Please enter the URL of the new website: ")
-                        add_website(new_website)
+                        username = get_current_username()
+                        add_website(new_website, username)
+
                     elif user_choice == "5":
                         if check_admin(username):
                             confirm = input("❓ Are you sure you want to clear the list? This cannot be undone. (y/n) ")
@@ -244,12 +268,15 @@ while True:
                                 print("List not cleared")
                         else:
                             print("⛔ You don't have permission to clear the list")
+
                     elif user_choice == "6":
-                        print("This option does not currently work.")
+                        get_user_list()
+
                     elif user_choice == "7":
                         change_credentials(username)
                         print("\n Logged out successfully! 👋")
                         break
+
                     elif user_choice == "8":
                         print("\n Logged out successfully! 👋")
                         break
@@ -259,7 +286,7 @@ while True:
                             print("\n Goodbye! 👋")
                             break
                         else:
-                            print("Invalid choice. Please try again. ❌")
+                            print("Invalid choice. Please try again. ❌")im
 
 
 
