@@ -10,3 +10,4 @@ ssl
 urllib3
 re
 socket
+os
