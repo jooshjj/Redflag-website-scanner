@@ -12,7 +12,7 @@ def display_menu():
 
     print("1. Start website scanner")
     print("2. Info")
-    print("3. Redflag / reported website")
+    print("3. Redflag / Sozial network ")
     print("4. Exit")
 
 def get_user_choice():
@@ -37,11 +37,10 @@ if __name__ == "__main__":
         display_info()
     
     elif choice == 3:
-        import support
+        import snetwork
 
     elif choice == 4:
         print("Exiting program...")
-
 
 
 
