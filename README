@@ -31,8 +31,8 @@
     the Redflag Website Scanner is a valuable tool to have in your arsenal. So why not give it a try and see 
     how it can help you protect your online security today?
 
-                                                              Requirements
-                                                      +--------------------------+
+                                                      Requirements
+                                             +--------------------------+
 
 To run this script, you'll need to have Python 3 installed on your computer. You can download it from the [official Python website](https://www.python.org/downloads/).
 
@@ -50,13 +50,13 @@ You can install all of them by running the following command:
 
 pip install -r requirements.txt
 
-                                                              License
-                                                    +--------------------------+
+                                                     License
+                                          +--------------------------+
  
 This project is licensed under the MIT License - see the LICENSE.md file for details.
 
-                                                          Acknowledgments
-                                                    +--------------------------+
+                                                Acknowledgments
+                                          +--------------------------+
 
 This project was inspired by the [OWASP Top Ten Project](https://owasp.org/www-project-top-ten/).
 
