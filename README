@@ -11,15 +11,20 @@
 🔍 Scanning for common malware signatures and vulnerabilities in the website's code
 🚫 Flagging any suspicious or blacklisted domains that the website might be associated with
 
-📈 The Redflag Website Scanner can also help you keep track of your scanned websites and monitor their security over time. You can save your scan results and view them later, or set up scheduled scans to automatically check the website's security on a regular basis.
+📈 The Redflag Website Scanner can also help you keep track of your scanned websites and monitor 
+   their security over time. You can save your scan results and view them later, or set up scheduled scans 
+   to automatically check the website's security on a regular basis.
 
-💻 This tool is designed to be user-friendly and easy to use, even if you don't have a lot of technical expertise. The program's interface is simple and intuitive, and you can easily navigate through the different scanning options and settings.
+💻 This tool is designed to be user-friendly and easy to use, even 
+    if you don't have a lot of technical expertise. The program's interface is simple and intuitive, 
+    and you can easily navigate through the different scanning options and settings.
 
-🌐 Whether you're a web developer, security researcher, or just someone who wants to stay safe online, the Redflag Website Scanner is a valuable tool to have in your arsenal. So why not give it a try and see how it can help you protect your online security today?
+🌐 Whether you're a web developer, security researcher, or just someone who wants to stay safe online,
+    the Redflag Website Scanner is a valuable tool to have in your arsenal. So why not give it a try and see 
+    how it can help you protect your online security today?
 
         Requirements
 +--------------------------+
-
 
 To run this script, you'll need to have Python 3 installed on your computer. You can download it from the [official Python website](https://www.python.org/downloads/).
 
@@ -37,11 +42,9 @@ You can install all of them by running the following command:
 
 pip install -r requirements.txt
 
-
            License
  +--------------------------+
  
-
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
 
        Acknowledgments
