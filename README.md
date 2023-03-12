@@ -1,4 +1,5 @@
-  Redflag Website Scanner
+
+Redflag Website Scanner
 +--------------------------+
 
 🔍 The Redflag Website Scanner is a powerful tool that can help you detect malicious websites and protect your online security. This open-source program is available on GitHub, and it's completely free to use.
