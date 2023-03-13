@@ -31,7 +31,7 @@ if __name__ == "__main__":
     choice = get_user_choice()
 
     if choice == 1:
-        import main
+        import scanner
     
     elif choice == 2:
         display_info()
