@@ -104,37 +104,46 @@ def check_website_security(url):
     else:
         print("Could not retrieve website content.")
 
+
+
 def check_phishing(url):
     try:
+        red_flags = []
      
-        
+        print(f"\n⛳ Red flags: ")
 
         # Check for redirects
         response = requests.get(url, allow_redirects=False)
         if response.status_code >= 300 and response.status_code < 400:
-            print(f"\n🚩  {url} (redirect detected)")
+            red_flags.append(f"{url} (redirect detected)")
 
         # Check for JavaScript redirects
         if re.search(r"window.location\s*=", response.text):
-            print(f"\n🚩  {url} (JavaScript redirect detected)")
+            red_flags.append(f"{url} (JavaScript redirect detected)")
 
         # Check for phishing indicators using regular expressions
         if re.search(r"(paypal.com|paypal\.com|paypal-com\.com|paypal-login\.com)", url, re.IGNORECASE):
-            print(f"\n🚩  {url} (suspicious URL)")
+            red_flags.append(f"{url} (suspicious URL)")
 
         if "text/html" in response.headers.get("Content-Type"):
             text = response.text.lower()
 
             # Check for fake login forms
             if re.search(r"login|signin|log in|sign in", text) and (re.search(r"password", text) or re.search(r"email|username", text)):
-                print(f"\n🚩  {url} (fake login form detected)")
+                red_flags.append(f"{url} (fake login form detected)")
 
             # Check for misspelled URLs
-            if re.search(r"paypa1|paypai|paypall|paypal1", text):
-                print(f"\n🚩  {url} (misspelled URL detected)")
+            if re.search(r"paypa1|paypai|paypall|paypal1\n", text):
+                red_flags.append(f"{url} (misspelled URL detected)")
+
+        if red_flags:
+            print("\033[91m" + "\n".join(red_flags) + "\033[0m") # red text
+        else:
+            print("✅ No red flags detected\n")
 
     except requests.exceptions.RequestException as e:
-        print(f"❌ Could not connect to {url}: {e}")
+        print(f"❌ Could not connect to {url}")
+
 
 def find_subdomains(domain_name):
     """
@@ -166,7 +175,82 @@ def find_emails_usernames(text):
     # Remove duplicates from the lists and return them
     return list(set(emails)), list(set(usernames))
 
+def check_sql_injection(url):
+    try:
+        print("\n\033[30m                   Deeper Information                       \033[0m")
+        print("\033[30m+--------------------------------------------------------+\033[0m\n")
+        print(f"\n💉 Vulnerable to SQL injection: ")
+        response = requests.get(url + "'")
+        if response.status_code == 500:
+            print(f"❌ {url} is vulnerable to SQL injection.")
+        else:
+            print(f"✅ {url} is not vulnerable to SQL injection.")
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Could not connect to {url}")
 
+
+def check_website_info(url):
+    try:
+        response = requests.get(url)
+        if response.ok:
+            print(f"\n🏹 Information gathering: ")
+
+            # Retrieve cookies and color suspicious code
+            cookies = response.cookies
+            cookies_text = f"🍪 Cookies: {cookies}"
+            if re.search(r"\b(admin|password|secret)\b", cookies_text, re.IGNORECASE):
+                cookies_text = cookies_text.replace(
+                    re.search(r"\b(admin|password|secret)\b", cookies_text, re.IGNORECASE).group(0),
+                    "\033[91m" + re.search(r"\b(admin|password|secret)\b", cookies_text, re.IGNORECASE).group(0) + "\033[0m"
+                ) # replace suspect text with colored text
+            print(cookies_text)
+
+            # Retrieve headers and color suspicious code
+            headers = response.headers
+            headers_text = f"\n🧭 Headers: {headers}"
+            if re.search(r"\b(X-|Access-Control-Allow-Origin|Server)\b", headers_text, re.IGNORECASE):
+                headers_text = headers_text.replace(
+                    re.search(r"\b(X-|Access-Control-Allow-Origin|Server)\b", headers_text, re.IGNORECASE).group(0),
+                    "\033[91m" + re.search(r"\b(X-|Access-Control-Allow-Origin|Server)\b", headers_text, re.IGNORECASE).group(0) + "\033[0m"
+                ) # replace suspect text with colored text
+            print(headers_text)
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Could not connect to {url}")
+
+
+def check_xss(url):
+    try:
+        response = requests.get(url)
+        if response.ok:
+            print("\n✖️  Vulnerable to XSS attacks: ")
+            if "<script>alert(" in response.text:
+                print(f"❌ {url} is vulnerable to XSS attacks.")
+            else:
+                print(f"✅ {url} is not vulnerable to XSS attacks.")
+        else:
+            print(f"❌ Could not connect to {url}")
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Could not connect to {url}")
+
+
+
+def check_ddos_protection(url):
+    cdn_providers = ["Cloudflare", "Akamai", "Fastly", "AWS CloudFront"]
+    try:
+        response = requests.get(url)
+        if response.ok:
+            print(f"\n📜 Protected against DDoS attacks:")
+            headers = response.headers
+            for header in headers:
+                header_value = headers[header]
+                if any(provider in header_value for provider in cdn_providers):
+                    print(f"✅ {url} is using a CDN known for its DDoS protection.")
+                    return True
+            print(f"❌ {url} is not using a CDN known for its DDoS protection.")
+            return False
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Could not connect to {url}")
+        return False
 
 
 # Prompt the user to enter a URL
@@ -175,6 +259,10 @@ url = input("👉 Enter a website URL: ")
 # Check the security of the website and retrieve some details
 check_website_security(url)
 check_phishing(url)
+check_sql_injection(url)
+check_xss(url)
+check_ddos_protection(url)
+check_website_info(url)
 
 
 
